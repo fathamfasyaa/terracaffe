@@ -12,6 +12,7 @@ class Penjualan extends Model
     protected $table = 'penjualan';
     protected $fillable = ['no_faktur', 'tgl_faktur', 'total_bayar', 'pelanggan_id', 'user_id'];
 
+
     public function pelanggan()
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id');

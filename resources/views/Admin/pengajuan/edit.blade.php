@@ -44,10 +44,10 @@
                 <input type="number" class="form-control" id="qty" name="qty" value="{{ old('qty', $pengajuan->qty) }}" min="1" required>
             </div>
 
-            <div class="mb-3 form-check">
+            {{-- <div class="mb-3 form-check">
                 <input type="checkbox" class="form-check-input" id="status" name="status" value="1" {{ $pengajuan->status ? 'checked' : '' }}>
                 <label class="form-check-label" for="status">Terpenuhi</label>
-            </div>
+            </div> --}}
 
             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
             <a href="{{ route('pengajuan-barang.index') }}" class="btn btn-secondary">Batal</a>

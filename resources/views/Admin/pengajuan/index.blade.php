@@ -36,9 +36,14 @@
                 <td>{{ $item->nama_barang }}</td>
                 <td>{{ $item->tgl_pengajuan->format('d/m/Y') }}</td>
                 <td>{{ $item->qty }}</td>
-                <td class="text-center">
-                    <input type="checkbox" class="form-check-input checkbox-green" {{ $item->status ? 'checked' : '' }} disabled>
-                </td>
+              <td class="text-center">
+    <label class="switch">
+        <input type="checkbox" {{ $item->status ? 'checked' : '' }} disabled>
+        <span class="slider"></span>
+    </label>
+</td>
+
+
                 <td>
                     <a href="{{ route('pengajuan-barang.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('pengajuan-barang.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini?');">
@@ -56,23 +61,50 @@
 {{-- Tambahkan CSS untuk styling --}}
 <style>
     /* Menjadikan checkbox hijau ketika dicentang */
-    .checkbox-green {
-        width: 18px;
-        height: 18px;
-        border-radius: 3px;
-        border: 2px solid #28a745;
-        position: relative;
-    }
+   .switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+}
 
-    .checkbox-green:checked {
-        background-color: #28a745;
-        border-color: #28a745;
-    }
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
 
-    /* Menjadikan checkbox lebih sejajar */
-    .text-center {
-        vertical-align: middle !important;
-        text-align: center !important;
-    }
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+  border-radius: 20px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #28a745;
+}
+
+input:checked + .slider:before {
+  transform: translateX(20px);
+}
+
 </style>
 @endsection

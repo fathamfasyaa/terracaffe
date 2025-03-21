@@ -13,8 +13,18 @@ class PengajuanBarangController extends Controller
     public function index()
     {
         $pengajuan = PengajuanBarang::all();
+
+        // Cek apakah barang yang diajukan ada di tabel produk
+        foreach ($pengajuan as $item) {
+            foreach ($pengajuan as $item) {
+                $item->status = \App\Models\Barang::whereRaw('LOWER(nama_barang) = ?', [strtolower(trim($item->nama_barang))])->exists();
+            }
+        }
+
         return view('admin.pengajuan.index', compact('pengajuan'));
     }
+
+
 
     public function create()
     {

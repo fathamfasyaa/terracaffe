@@ -9,13 +9,16 @@ use App\Http\Controllers\PemasokController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\LaporanController;
-use App\Http\Controllers\PengajuanBarangController  ;
+use App\Http\Controllers\PengajuanBarangController;
 use App\Http\Controllers\ExportController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\TransaksiController;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
 });
+
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
@@ -24,7 +27,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 
-Route::get('/', function () {
+Route::get('dashboard', function () {
     if (Auth::check()) {
         $user = Auth::user();
 
@@ -127,7 +130,6 @@ Route::middleware(['auth', 'role:pemilik'])->group(function () {
     Route::get('/pemilik/laporan', [LaporanController::class, 'index'])->name('pemilik.laporan.index');
     Route::get('/pemilik/laporan/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('pemilik.laporan.penjualan');
     Route::get('/pemilik/laporan/pembelian', [LaporanController::class, 'laporanPembelian'])->name('pemilik.laporan.pembelian');
-
 });
 
 
@@ -145,3 +147,7 @@ Route::prefix('admin')->group(function () {
 
 Route::get('/pengajuan/export-pdf', [PengajuanBarangController::class, 'exportPDF'])->name('pengajuan.export.pdf');
 Route::get('/pengajuan/export-excel', [PengajuanBarangController::class, 'exportExcel'])->name('pengajuan.export.excel');
+
+
+
+Route::get('/transaksi/getData', [TransaksiController::class, 'getData'])->name('transaksi.getData');

@@ -18,6 +18,7 @@
 
     <link href="{{ asset('assets') }}/css/sb-admin-2.min.css" rel="stylesheet">
     <link href="{{ asset('assets') }}/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
     <link href="{{ asset('assets') }}/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
@@ -146,7 +147,7 @@
         data-parent="#accordionSidebar">
         <div class="bg-white py-2 collapse-inner rounded">
             <a class="collapse-item" href="{{ route('pengajuan-barang.index') }}">Daftar Pengajuan</a>
-            <a class="collapse-item" href="{{ route('pengajuan-barang.create') }}">Tambah Pengajuan</a>
+            {{-- <a class="collapse-item" href="{{ route('pengajuan-barang.create') }}">Tambah Pengajuan</a> --}}
         </div>
     </div>
 </li>

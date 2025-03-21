@@ -3,6 +3,18 @@
 @section('content')
 <div class="container">
     <h2>Tambah Pengajuan Barang</h2>
+
+    
+        {{-- Menampilkan pesan error jika ada --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     <form action="{{ route('pengajuan-barang.store') }}" method="POST">
         @csrf
         <div class="mb-3">
