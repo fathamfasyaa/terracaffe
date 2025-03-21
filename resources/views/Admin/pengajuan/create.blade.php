@@ -1,0 +1,31 @@
+@extends('Admin.layout_admin.app')
+
+@section('content')
+<div class="container">
+    <h2>Tambah Pengajuan Barang</h2>
+    <form action="{{ route('pengajuan-barang.store') }}" method="POST">
+        @csrf
+        <div class="mb-3">
+            <label>Nama Pengaju</label>
+            <input type="text" name="pengaju" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Nama Barang</label>
+            <input type="text" name="nama_barang" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Deskripsi</label>
+            <textarea name="deskripsi" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label>Tanggal Pengajuan</label>
+            <input type="date" name="tgl_pengajuan" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Quantity</label>
+            <input type="number" name="qty" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-success">Simpan</button>
+    </form>
+</div>
+@endsection

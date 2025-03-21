@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('satuan', 10);
             $table->double('harga_jual');
             $table->integer('stok');
+            $table->integer('kategori_id');
             $table->boolean('ditarik')->default(false);
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->string('gambar')->nullable(); // Tambahkan kolom gambar
             $table->timestamps();
         });

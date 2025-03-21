@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         // Admin
         User::create([
-            'name' => 'Admin Azriel',
+            'name' => 'Admin',
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin'),
             'role' => 'admin',
@@ -23,14 +23,14 @@ class UserSeeder extends Seeder
 
         // Kasir
         User::create([
-            'name' => 'Kasir Azriel',
+            'name' => 'Kasir',
             'email' => 'kasir@gmail.com',
             'password' => Hash::make('kasir'),
             'role' => 'kasir',
         ]);
         // Pemilik
         User::create([
-            'name' => 'Pemilik Azriel',
+            'name' => 'Pemilik',
             'email' => 'pemilik@gmail.com',
             'password' => Hash::make('pemilik'),
             'role' => 'pemilik',

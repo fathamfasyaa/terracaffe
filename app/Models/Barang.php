@@ -17,10 +17,11 @@ class Barang extends Model
         'satuan',
         'harga_jual',
         'stok',
-        'kategori_id', // Tambahkan kategori_id
+        'kategori_id',
         'ditarik',
         'user_id',
-        'gambar'
+        'gambar',
+        'pemasok_id'
     ];
 
     public function user()
@@ -41,5 +42,10 @@ class Barang extends Model
     public function kategori()
     {
         return $this->belongsTo(Kategori::class, 'kategori_id');
+    }
+
+    public function pemasok()
+    {
+        return $this->belongsTo(Pemasok::class, 'pemasok_id');
     }
 }

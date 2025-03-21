@@ -13,7 +13,12 @@ class PemasokController extends Controller
     public function index()
     {
         $pemasok = Pemasok::all();
-        return view('pemasok.index', compact('pemasok'));
+        $user = auth()->user();
+        if($user->role == 'admin') {
+            return view('Admin/pemasok/index',compact('pemasok'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -21,7 +26,12 @@ class PemasokController extends Controller
      */
     public function create()
     {
-        return view('pemasok.create');
+        $user = auth()->user();
+        if($user->role == 'admin') {
+            return view('Admin/pemasok/create');
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -29,7 +39,8 @@ class PemasokController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        // Validasi input
+        $validatedData = $request->validate([
             'nama_pemasok' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'nomor_telepon' => 'nullable|string|max:20',
@@ -37,9 +48,18 @@ class PemasokController extends Controller
             'catatan' => 'nullable|string',
         ]);
 
-        Pemasok::create($request->all());
-
-        return redirect()->route('pemasok.index')->with('success', 'Pemasok berhasil ditambahkan.');
+        // Simpan data ke database
+        try {
+        $pemasok = Pemasok::create($validatedData);
+        $user = auth()->user();
+        if($user->role == 'admin') {
+            return redirect()->route('admin.pemasok.index')->with('success', 'pemasok berhasil ditambahkan');
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal menyimpan data: ' . $e->getMessage()]);
+        }
     }
 
     /**
@@ -47,7 +67,12 @@ class PemasokController extends Controller
      */
     public function show(Pemasok $pemasok)
     {
-        return view('pemasok.show', compact('pemasok'));
+       $user = auth()->user();
+        if($user->role == 'admin') {
+            return view('Admin/pemasok/show', compact('pemasok'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -55,7 +80,12 @@ class PemasokController extends Controller
      */
     public function edit(Pemasok $pemasok)
     {
-        return view('pemasok.edit', compact('pemasok'));
+        $user = auth()->user();
+        if($user->role == 'admin') {
+            return view('Admin/pemasok/edit', compact('pemasok'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -63,7 +93,7 @@ class PemasokController extends Controller
      */
     public function update(Request $request, Pemasok $pemasok)
     {
-        $request->validate([
+        $validatedData = $request->validate([
             'nama_pemasok' => 'required|string|max:255',
             'alamat' => 'nullable|string',
             'nomor_telepon' => 'nullable|string|max:20',
@@ -71,9 +101,14 @@ class PemasokController extends Controller
             'catatan' => 'nullable|string',
         ]);
 
-        $pemasok->update($request->all());
+        $pemasok->update($validatedData);
 
-        return redirect()->route('pemasok.index')->with('success', 'Pemasok berhasil diperbarui.');
+        $user = auth()->user();
+        if($user->role == 'admin') {
+            return redirect()->route('admin.pemasok.index')->with('success', 'pemasok berhasil diperbarui');
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     /**
@@ -82,6 +117,11 @@ class PemasokController extends Controller
     public function destroy(Pemasok $pemasok)
     {
         $pemasok->delete();
-        return redirect()->route('pemasok.index')->with('success', 'Pemasok berhasil dihapus.');
+        $user = auth()->user();
+        if($user->role == 'admin') {
+            return redirect()->route('admin.pemasok.index')->with('success', 'pemasok berhasil dihapus');
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

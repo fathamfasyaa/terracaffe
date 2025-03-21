@@ -10,12 +10,28 @@ class KategoriController extends Controller
     public function index()
     {
         $kategoris = Kategori::all();
-        return view('kategori.index', compact('kategoris'));
+        $user = auth()->user();
+        
+        if ($user->role == 'admin') {
+            return view('admin/kategori/index', compact('kategoris'));
+        } elseif($user->role == 'kasir') {
+            return view('Kasir/kategori/index', compact('kategoris'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function create()
     {
-        return view('kategori.create');
+        $user = auth()->user();
+        
+        if ($user->role == 'admin') {
+            return view('admin/kategori/create');
+        } elseif($user->role == 'kasir') {
+            return view('Kasir/kategori/create');
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function store(Request $request)
@@ -28,13 +44,28 @@ class KategoriController extends Controller
             'nama_kategori' => $request->nama_kategori,
         ]);
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil ditambahkan!');
+        $user = auth()->user();
+        if ($user->role == 'admin') {
+            return redirect()->route('admin.kategori')->with('success', 'kategori berhasil ditambahkan');
+        } elseif ($user->role == 'kasir') {
+            return redirect()->route('kasir.kategori')->with('success', 'kategori berhasil ditambahkan');
+        } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function edit($id)
     {
         $kategori = Kategori::findOrFail($id);
-        return view('kategori.edit', compact('kategori'));
+        $user = auth()->user();
+        
+        if ($user->role == 'admin') {
+            return view('admin/kategori/edit', compact('kategori'));
+        } elseif($user->role == 'kasir') {
+            return view('Kasir/kategori/edit', compact('kategori'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function update(Request $request, $id)
@@ -48,13 +79,26 @@ class KategoriController extends Controller
             'nama_kategori' => $request->nama_kategori,
         ]);
 
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil diperbarui!');
+        $user = auth()->user();
+        if ($user->role == 'admin') {
+            return redirect()->route('admin.kategori')->with('success', 'kategori berhasil diperbarui');
+        } elseif ($user->role == 'kasir') {
+            return redirect()->route('kasir.kategori')->with('success', 'kategori berhasil diperbarui');
+        } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
-
     public function destroy($id)
     {
         $kategori = Kategori::findOrFail($id);
         $kategori->delete();
-        return redirect()->route('kategori.index')->with('success', 'Kategori berhasil dihapus!');
+        $user = auth()->user();
+        if ($user->role == 'admin') {
+            return redirect()->route('admin.kategori')->with('success', 'kategori berhasil dihapus');
+        } elseif ($user->role == 'kasir') {
+            return redirect()->route('kasir.kategori')->with('success', 'kategori berhasil dihapus');
+        } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

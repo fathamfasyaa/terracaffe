@@ -1,0 +1,42 @@
+[
+    {
+        "id":1,
+        "Nama_Kategori":"Minyak"
+    },
+    {
+        "id":2,
+        "Nama_Kategori":"Gula"
+    },
+    {
+        "id":3,
+        "Nama_Kategori":"Mie"
+    },
+    {
+        "id":4,
+        "Nama_Kategori":"Sabun Mandi"
+    },
+    {
+        "id":5,
+        "Nama_Kategori":"Detergent"
+    },
+    {
+        "id":6,
+        "Nama_Kategori":"Snack"
+    },
+    {
+        "id":7,
+        "Nama_Kategori":"Minuman Susu"
+    },
+    {
+        "id":8,
+        "Nama_Kategori":"Minuman Kopi"
+    },
+    {
+        "id":9,
+        "Nama_Kategori":"Snack Manis"
+    },
+    {
+        "id":10,
+        "Nama_Kategori":"Air Mineral"
+    }
+]

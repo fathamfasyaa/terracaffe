@@ -83,9 +83,9 @@
                 <button type="submit" class="btn btn-primary w-100 fw-bold py-2">Login</button>
             </form>
 
-            <p class="text-center mt-3">
+            {{-- <p class="text-center mt-3">
                 Belum punya akun? <a href="{{ route('register') }}" class="text-decoration-none fw-bold" style="color: #764ba2;">Daftar Sekarang</a>
-            </p>
+            </p> --}}
         </div>
     </div>
 
