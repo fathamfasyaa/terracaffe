@@ -141,7 +141,11 @@ Route::prefix('admin')->group(function () {
     Route::get('/pengajuan-barang/{id}/edit', [PengajuanBarangController::class, 'edit'])->name('pengajuan-barang.edit');
     Route::put('/pengajuan-barang/{id}', [PengajuanBarangController::class, 'update'])->name('pengajuan-barang.update');
     Route::delete('/pengajuan-barang/{id}', [PengajuanBarangController::class, 'destroy'])->name('pengajuan-barang.destroy');
+    Route::post('/pengajuan-barang/update-terpenuhi/{id}', [PengajuanBarangController::class, 'updateTerpenuhi'])->name('pengajuan.update-terpenuhi');
 });
+
+
+
 
 
 

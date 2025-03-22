@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container">
-    <h2>Pengajuan Barang</h2>
+    <h2>Pengajuan Produk</h2>
     
     <div class="d-flex justify-content-between mb-3">
         <a href="{{ route('pengajuan-barang.create') }}" class="btn btn-primary">+ Tambah Pengajuan</a>
@@ -21,7 +21,7 @@
             <tr>
                 <th>No</th>
                 <th>Nama Pengaju</th>
-                <th>Nama Barang</th>
+                <th>Nama Produk</th>
                 <th>Tanggal Pengajuan</th>
                 <th>Qty</th>
                 <th class="text-center">Terpenuhi?</th>
@@ -36,14 +36,14 @@
                 <td>{{ $item->nama_barang }}</td>
                 <td>{{ $item->tgl_pengajuan->format('d/m/Y') }}</td>
                 <td>{{ $item->qty }}</td>
-              <td class="text-center">
-    <label class="switch">
-        <input type="checkbox" {{ $item->status ? 'checked' : '' }} disabled>
-        <span class="slider"></span>
-    </label>
-</td>
-
-
+               <td class="text-center">
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox"
+                                            id="terpenuhiSwitch{{ $item->id }}"
+                                            {{ $item->terpenuhi == 1 ? 'checked' : '' }}
+                                            onchange="updateTerpenuhi({{ $item->id }}, this.checked)">
+                                    </div>
+                                </td>
                 <td>
                     <a href="{{ route('pengajuan-barang.edit', $item->id) }}" class="btn btn-warning btn-sm">Edit</a>
                     <form action="{{ route('pengajuan-barang.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengajuan ini?');">
@@ -61,50 +61,65 @@
 {{-- Tambahkan CSS untuk styling --}}
 <style>
     /* Menjadikan checkbox hijau ketika dicentang */
-   .switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 20px;
-}
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+    }
 
-.switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
 
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 20px;
-}
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 20px;
+    }
 
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 14px;
-  width: 14px;
-  left: 3px;
-  bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
-}
+    .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
 
-input:checked + .slider {
-  background-color: #28a745;
-}
+    input:checked + .slider {
+        background-color: #28a745;
+    }
 
-input:checked + .slider:before {
-  transform: translateX(20px);
-}
-
+    input:checked + .slider:before {
+        transform: translateX(20px);
+    }
 </style>
+
+{{-- Script untuk update status secara otomatis --}}
+<script>
+        function updateTerpenuhi(id, terpenuhi) {
+            axios.post(/pengajuan-barang/update-terpenuhi/${id}, {
+                    terpenuhi: terpenuhi ? 1 : 0
+                })
+                .then(response => {
+                    console.log(response.data.message);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Gagal memperbarui status terpenuhi.');
+                });
+        }
+    </script>
 @endsection

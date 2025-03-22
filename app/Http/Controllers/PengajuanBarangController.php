@@ -14,17 +14,8 @@ class PengajuanBarangController extends Controller
     {
         $pengajuan = PengajuanBarang::all();
 
-        // Cek apakah barang yang diajukan ada di tabel produk
-        foreach ($pengajuan as $item) {
-            foreach ($pengajuan as $item) {
-                $item->status = \App\Models\Barang::whereRaw('LOWER(nama_barang) = ?', [strtolower(trim($item->nama_barang))])->exists();
-            }
-        }
-
         return view('admin.pengajuan.index', compact('pengajuan'));
     }
-
-
 
     public function create()
     {
@@ -47,7 +38,7 @@ class PengajuanBarangController extends Controller
             'deskripsi' => $request->deskripsi,
             'tgl_pengajuan' => $request->tgl_pengajuan,
             'qty' => $request->qty,
-            'status' => false, // Default status belum terpenuhi
+            'status' => false,
         ]);
 
         return redirect()->route('pengajuan-barang.index')->with('success', 'Pengajuan berhasil ditambahkan.');
@@ -91,7 +82,6 @@ class PengajuanBarangController extends Controller
         return redirect()->route('pengajuan-barang.index')->with('success', 'Pengajuan berhasil dihapus.');
     }
 
-    // 📄 Export ke PDF
     public function exportPDF()
     {
         $pengajuan = PengajuanBarang::all();
@@ -99,9 +89,18 @@ class PengajuanBarangController extends Controller
         return $pdf->download('pengajuan_barang.pdf');
     }
 
-    // 📊 Export ke Excel
     public function exportExcel()
     {
         return Excel::download(new PengajuanBarangExport, 'pengajuan_barang.xlsx');
+    }
+
+    // 📑 Update status secara manual menggunakan switch
+    public function updateTerpenuhi(Request $request, $id)
+    {
+        $pengajuan = PengajuanBarang::findOrFail($id);
+        $pengajuan->terpenuhi = $request->terpenuhi;
+        $pengajuan->save();
+
+        return response()->json(['message' => 'Status terpenuhi berhasil diperbarui!'], 200);
     }
 }
