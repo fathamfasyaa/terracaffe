@@ -24,7 +24,8 @@
 
             <div class="mb-3">
                 <label>Kode Barang</label>
-                <input type="text" name="kode_barang" class="form-control" value="{{ $barang->kode_barang }}" readonly>
+                <input type="text" name="kode_barang" class="form-control" value="{{ $barang->kode_barang }}" required>
+
             </div>
 
             <div class="mb-3">

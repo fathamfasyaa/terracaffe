@@ -17,6 +17,22 @@
             </div>
         @endif
 
+        {{-- Filter form --}}
+        <form action="{{ route('admin.laporan.penjualan') }}" method="GET" class="row g-3 mb-4">
+            <div class="col-md-3">
+                <label for="filter_tanggal" class="form-label">Filter per Hari</label>
+                <input type="date" name="filter_tanggal" id="filter_tanggal" class="form-control" value="{{ request('filter_tanggal') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="filter_bulan" class="form-label">Filter per Bulan</label>
+                <input type="month" name="filter_bulan" id="filter_bulan" class="form-control" value="{{ request('filter_bulan') }}">
+            </div>
+            <div class="col-md-3 align-self-end">
+                <button type="submit" class="btn btn-primary">Filter</button>
+                <a href="{{ route('admin.laporan.penjualan') }}" class="btn btn-secondary">Reset</a>
+            </div>
+        </form>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -29,30 +45,41 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach ($penjualan as $p)
+                @forelse ($penjualan as $p)
                     <tr>
                         <td>{{ $p->no_faktur }}</td>
                         <td>
-                            @foreach ($p->detailPenjualan as $detail)
-                                {{ $detail->barang->nama_barang }}
-                            @endforeach
+                            <ul class="mb-0 ps-3">
+                                @foreach ($p->detailPenjualan as $detail)
+                                    <li>{{ $detail->barang->nama_barang }}</li>
+                                @endforeach
+                            </ul>
                         </td>
                         <td>
-                            @foreach ($p->detailPenjualan as $data)
-                                {{ $data->jumlah }}
-                            @endforeach
+                            <ul class="mb-0 ps-3">
+                                @foreach ($p->detailPenjualan as $data)
+                                    <li>{{ $data->jumlah }}</li>
+                                @endforeach
+                            </ul>
                         </td>
                         <td>
-                            @foreach ($p->detailPenjualan as $data)
-                                Rp{{ number_format($data->harga_jual, 0, ',', '.') }}
-                            @endforeach
+                            <ul class="mb-0 ps-3">
+                                @foreach ($p->detailPenjualan as $data)
+                                    <li>Rp{{ number_format($data->harga_jual, 0, ',', '.') }}</li>
+                                @endforeach
+                            </ul>
                         </td>
                         <td>Rp{{ number_format($p->total_bayar, 0, ',', '.') }}</td>
                         <td>{{ $p->tgl_faktur }}</td>
                     </tr>
-                @endforeach
-
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center">Data tidak ditemukan</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>
 @endsection
+
+

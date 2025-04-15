@@ -152,6 +152,7 @@ Route::prefix('admin')->group(function () {
 Route::get('/pengajuan/export-pdf', [PengajuanBarangController::class, 'exportPDF'])->name('pengajuan.export.pdf');
 Route::get('/pengajuan/export-excel', [PengajuanBarangController::class, 'exportExcel'])->name('pengajuan.export.excel');
 
+Route::get('/penjualan/export-excel', [PenjualanController::class, 'exportExcel'])->name('penjualan.export.excel');
 
 
 Route::get('/transaksi/getData', [TransaksiController::class, 'getData'])->name('transaksi.getData');

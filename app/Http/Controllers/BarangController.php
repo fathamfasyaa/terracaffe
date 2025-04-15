@@ -16,12 +16,12 @@ class BarangController extends Controller
         $barang = Barang::with('kategori')->get();
 
         $user = auth()->user();
-        
+
         if ($user->role == 'admin') {
             return view('admin/barang/index', compact('barang'));
-        } elseif($user->role == 'kasir') {
+        } elseif ($user->role == 'kasir') {
             return view('Kasir/barang/index', compact('barang'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -31,12 +31,12 @@ class BarangController extends Controller
         $kategori = Kategori::all();
         $pemasoks = Pemasok::all();
         $user = auth()->user();
-        
+
         if ($user->role == 'admin') {
-            return view('admin/barang/create', compact('kategori','pemasoks'));
-        } elseif($user->role == 'kasir') {
+            return view('admin/barang/create', compact('kategori', 'pemasoks'));
+        } elseif ($user->role == 'kasir') {
             return view('Kasir/barang/create', compact('kategori', 'pemasoks'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -60,8 +60,7 @@ class BarangController extends Controller
             $file->move(public_path('barang'), $fileName);
             $gambarPath = 'barang/' . $fileName;
         }
-        // dd($fileName);
-        
+
         $bulanTahun = Carbon::now()->format('Ym');
         $jumlahBarang = Barang::where('kode_barang', 'LIKE', "BRG-{$bulanTahun}-%")->count() + 1;
         $kodeBarang = sprintf("BRG-%s-%04d", $bulanTahun, $jumlahBarang);
@@ -73,9 +72,9 @@ class BarangController extends Controller
         Barang::create($data);
         $user = auth()->user();
         if ($user->role == 'admin') {
-            return redirect()->route('admin.barang')->with('success', 'barang berhasil ditambahkan');
+            return redirect()->route('admin.barang')->with('success', 'Barang berhasil ditambahkan');
         } elseif ($user->role == 'kasir') {
-            return redirect()->route('kasir.barang')->with('success', 'barang berhasil ditambahkan');
+            return redirect()->route('kasir.barang')->with('success', 'Barang berhasil ditambahkan');
         } else {
             abort(403, 'Unauthorized action.');
         }
@@ -84,12 +83,12 @@ class BarangController extends Controller
     public function show(Barang $barang)
     {
         $user = auth()->user();
-        
+
         if ($user->role == 'admin') {
             return view('admin/barang/show', compact('barang'));
-        } elseif($user->role == 'kasir') {
+        } elseif ($user->role == 'kasir') {
             return view('Kasir/barang/show', compact('barang'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -99,12 +98,12 @@ class BarangController extends Controller
         $kategori = Kategori::all();
         $pemasoks = Pemasok::all();
         $user = auth()->user();
-        
+
         if ($user->role == 'admin') {
             return view('admin/barang/edit', compact('barang', 'kategori', 'pemasoks'));
-        } elseif($user->role == 'kasir') {
+        } elseif ($user->role == 'kasir') {
             return view('Kasir/barang/edit', compact('barang', 'kategori', 'pemasoks'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -112,6 +111,7 @@ class BarangController extends Controller
     public function update(Request $request, Barang $barang)
     {
         $request->validate([
+            'kode_barang' => 'required',
             'nama_barang' => 'required',
             'satuan' => 'required',
             'harga_jual' => 'required|numeric',
@@ -121,8 +121,8 @@ class BarangController extends Controller
             'gambar' => 'nullable|image|max:2048',
         ]);
 
-        // Ambil semua data kecuali kode_barang agar tidak bisa diubah
-        $data = $request->except(['kode_barang']);
+        // Ambil semua data termasuk kode_barang yang sekarang bisa diubah
+        $data = $request->all();
 
         // Jika ada gambar baru, hapus yang lama lalu simpan yang baru
         if ($request->hasFile('gambar')) {
@@ -132,16 +132,15 @@ class BarangController extends Controller
             $data['gambar'] = $request->file('gambar')->store('barang', 'public');
         }
 
-        // Debugging untuk melihat apakah data yang diupdate benar
-        // dd($barang, $data); // Aktifkan jika masih ada error
-
+        // Update barang
         $barang->update($data);
 
+        // Redirect ke halaman yang sesuai setelah berhasil update
         $user = auth()->user();
         if ($user->role == 'admin') {
-            return redirect()->route('admin.barang')->with('success', 'barang berhasil diperbarui');
+            return redirect()->route('admin.barang')->with('success', 'Barang berhasil diperbarui');
         } elseif ($user->role == 'kasir') {
-            return redirect()->route('kasir.barang')->with('success', 'barang berhasil diperbarui');
+            return redirect()->route('kasir.barang')->with('success', 'Barang berhasil diperbarui');
         } else {
             abort(403, 'Unauthorized action.');
         }
@@ -156,9 +155,9 @@ class BarangController extends Controller
         $barang->delete();
         $user = auth()->user();
         if ($user->role == 'admin') {
-            return redirect()->route('admin.barang')->with('success', 'barang berhasil dihapus');
+            return redirect()->route('admin.barang')->with('success', 'Barang berhasil dihapus');
         } elseif ($user->role == 'kasir') {
-            return redirect()->route('kasir.barang')->with('success', 'barang berhasil dihapus');
+            return redirect()->route('kasir.barang')->with('success', 'Barang berhasil dihapus');
         } else {
             abort(403, 'Unauthorized action.');
         }

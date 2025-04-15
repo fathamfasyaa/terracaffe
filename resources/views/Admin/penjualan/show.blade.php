@@ -3,33 +3,55 @@
 @section('content')
     <div class="container">
         <h1 class="mb-3">Detail Transaksi</h1>
-        <p><strong>No Faktur:</strong> {{ $penjualan->no_faktur }}</p>
-        <p><strong>Tanggal:</strong> {{ $penjualan->tgl_faktur }}</p>
-        <p><strong>Pelanggan:</strong> {{ $penjualan->pelanggan->nama ?? 'Umum' }}</p>
-        <p><strong>Total Bayar:</strong> Rp{{ number_format($penjualan->total_bayar, 0, ',', '.') }}</p>
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>No Faktur:</strong> {{ $penjualan->no_faktur }}</p>
+                        <p><strong>Tanggal:</strong> {{ \Carbon\Carbon::parse($penjualan->tgl_faktur)->format('d/m/Y H:i:s') }}</p>
+                        <p><strong>Kasir:</strong> {{ $penjualan->user->name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Pelanggan:</strong> {{ $penjualan->pelanggan->nama ?? 'Umum' }}</p>
+                      <p><strong>Uang Diberikan:</strong> Rp{{ number_format($penjualan->uang_diberikan, 0, ',', '.') }}</p>
+<p><strong>Kembalian:</strong> Rp{{ number_format($penjualan->kembalian, 0, ',', '.') }}</p>
 
-        <h4>Detail Barang</h4>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Nama Barang</th>
-                    <th>Harga Jual</th>
-                    <th>Jumlah</th>
-                    <th>Subtotal</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($penjualan->detailPenjualan as $detail)
-                    <tr>
-                        <td>{{ $detail->barang->nama_barang }}</td>
-                        <td>Rp{{ number_format($detail->harga_jual, 0, ',', '.') }}</td>
-                        <td>{{ $detail->jumlah }}</td>
-                        <td>Rp{{ number_format($detail->sub_total, 0, ',', '.') }}</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                    </div>
+                </div>
 
-        <a href="{{ route('admin.penjualan') }}" class="btn btn-primary">Kembali</a>
+                <h4 class="mt-4">Detail Barang</h4>
+                <table class="table table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Barang</th>
+                            <th>Harga Jual</th>
+                            <th>Jumlah</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($penjualan->detailPenjualan as $index => $detail)
+                            <tr>
+                                <td>{{ $index + 1 }}</td>
+                                <td>{{ $detail->barang->nama_barang }}</td>
+                                <td>Rp{{ number_format($detail->harga_jual, 0, ',', '.') }}</td>
+                                <td>{{ $detail->jumlah }}</td>
+                                <td>Rp{{ number_format($detail->sub_total, 0, ',', '.') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <div class="mt-3">
+                    <a href="{{ route('admin.penjualan') }}" class="btn btn-primary">
+                        <i class="fas fa-arrow-left"></i> Kembali ke Daftar Penjualan
+                    </a>
+                    <a href="{{ route('admin.penjualan.struk', $penjualan->id) }}" class="btn btn-success ml-2">
+                        <i class="fas fa-print"></i> Cetak Struk
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
