@@ -1,4 +1,5 @@
 @extends('Kasir.Kasir_layout.app')
+
 @push('style')
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet">
 @endpush
@@ -7,7 +8,7 @@
     <div class="container">
         <h2 class="mb-4">Tambah Pembelian</h2>
 
-        <form action="{{ route('kasir.pembelian.store') }}" method="POST">
+        <form action="{{ route('admin.pembelian.store') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label>Pemasok</label>
@@ -53,7 +54,7 @@
             function getBarangByPemasok(pemasok_id, callback) {
 
                 $.ajax({
-                    url: `/kasir/pembelian/barang/${pemasok_id}`,
+                    url: `/admin/pembelian/barang/${pemasok_id}`,
                     type: 'GET',
                     dataType: 'json',
                     success: function(response) {

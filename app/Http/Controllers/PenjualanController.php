@@ -11,6 +11,9 @@ use App\Models\Pelanggan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Mike42\Escpos\EscposImage;
 
 
 class PenjualanController extends Controller
@@ -19,12 +22,12 @@ class PenjualanController extends Controller
     {
         $penjualan = Penjualan::with('pelanggan', 'user')->latest()->get();
         $user = auth()->user();
-        
+
         if ($user->role == 'admin') {
             return view('admin/penjualan/index', compact('penjualan'));
-        } elseif($user->role == 'kasir') {
+        } elseif ($user->role == 'kasir') {
             return view('kasir/penjualan/index', compact('penjualan'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -32,13 +35,14 @@ class PenjualanController extends Controller
     public function create()
     {
         $pelanggan = Pelanggan::all();
-        $barang = Barang::where('stok', '>', 0)->get();$user = auth()->user();
-        
+        $barang = Barang::where('stok', '>', 0)->get();
+        $user = auth()->user();
+
         if ($user->role == 'admin') {
             return view('admin/penjualan/create', compact('pelanggan', 'barang'));
-        } elseif($user->role == 'kasir') {
+        } elseif ($user->role == 'kasir') {
             return view('kasir/penjualan/create', compact('pelanggan', 'barang'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -52,8 +56,6 @@ class PenjualanController extends Controller
             'jumlah' => 'required|array',
             'jumlah.*' => 'required|integer|min:1',
         ]);
-
-        // dd($request->all());
 
         DB::beginTransaction();
         try {
@@ -89,7 +91,11 @@ class PenjualanController extends Controller
             }
 
             $penjualan->update(['total_bayar' => $totalBayar]);
+
             DB::commit();
+
+            // Struk otomatis setelah transaksi berhasil
+            $this->cetakStruk($penjualan);
 
             $user = auth()->user();
             if ($user->role == 'admin') {
@@ -105,6 +111,64 @@ class PenjualanController extends Controller
         }
     }
 
+    public function cetakManual($id)
+    {
+        $penjualan = Penjualan::with(['user', 'pelanggan', 'detailPenjualan.barang'])->findOrFail($id);
+        $this->cetakStruk($penjualan);
+        return back()->with('success', 'Struk berhasil dicetak.');
+    }
+
+    private function cetakStruk(Penjualan $penjualan)
+    {
+        try {
+            $connector = new WindowsPrintConnector("POS-52"); // Ganti dengan nama printer kamu
+            $printer = new Printer($connector);
+
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text("TERRA CAFE\n");
+            $printer->text("Jl. Contoh Alamat No. 123\n");
+            $printer->text("Telp: 0812-3456-7890\n");
+            $printer->feed();
+
+            $printer->setJustification(Printer::JUSTIFY_LEFT);
+            $printer->text("No Faktur : {$penjualan->no_faktur}\n");
+         $printer->text("Tanggal   : " . \Carbon\Carbon::parse($penjualan->tgl_faktur)->format('d-m-Y H:i') . "\n");
+            $printer->text("Kasir     : " . $penjualan->user->name . "\n");
+            if ($penjualan->pelanggan) {
+                $printer->text("Pelanggan : " . $penjualan->pelanggan->nama . "\n");
+            }
+            $printer->feed();
+
+            $printer->text("--------------------------------\n");
+            foreach ($penjualan->detailPenjualan as $detail) {
+                $nama = $detail->barang->nama_barang;
+                $qty = $detail->jumlah;
+                $harga = number_format($detail->harga_jual, 0, ',', '.');
+                $subtotal = number_format($detail->sub_total, 0, ',', '.');
+                $printer->text("$nama\n");
+                $printer->text("  $qty x $harga = $subtotal\n");
+            }
+            $printer->text("--------------------------------\n");
+
+            $total = number_format($penjualan->total_bayar, 0, ',', '.');
+            $printer->setJustification(Printer::JUSTIFY_RIGHT);
+            $printer->text("Total : Rp $total\n");
+
+            $printer->feed(2);
+            $printer->setJustification(Printer::JUSTIFY_CENTER);
+            $printer->text("Terima kasih\n");
+            $printer->text("~ TERRA CAFE ~\n");
+
+            $printer->feed(4);
+            $printer->cut();
+            $printer->close();
+        } catch (\Exception $e) {
+            Log::error("Gagal mencetak struk: " . $e->getMessage());
+        }
+    }
+
+
+
     public function show($id)
     {
         $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
@@ -112,9 +176,9 @@ class PenjualanController extends Controller
         
         if ($user->role == 'admin') {
             return view('admin/penjualan/show', compact('penjualan'));
-        } elseif($user->role == 'kasir') {
+        } elseif ($user->role == 'kasir') {
             return view('kasir/penjualan/show', compact('penjualan'));
-        }else {
+        } else {
             abort(403, 'Unauthorized action.');
         }
     }
@@ -144,68 +208,6 @@ class PenjualanController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        }
+        } 
     }
-
-public function cetakStruk(Request $request)
-{
-    // Ambil query parameters
-    $totalHarga = $request->query('total_bayar');
-    $uangDiberikan = $request->query('uang_diberikan');
-    $kembalian = $uangDiberikan - $totalHarga;
-    $selectedBarang = json_decode(urldecode($request->query('barang')), true);
-
-    // Get the current year
-    $currentYear = date('Y');
-
-    // Get the last invoice number for the current year from the penjualan table
-    $lastInvoice = DB::table('penjualan')
-        ->where('no_faktur', 'like', 'PJ' . $currentYear . '%')
-        ->orderBy('no_faktur', 'desc')
-        ->first();
-    // Determine the new sequential number
-    if ($lastInvoice) {
-        $lastNoFaktur = $lastInvoice->no_faktur;
-        $lastSequentialNumber = (int)substr($lastNoFaktur, -3);
-        $newSequentialNumber = str_pad($lastSequentialNumber + 1, 3, '0', STR_PAD_LEFT);
-    } else {
-        $newSequentialNumber = '001';
-    }
-
-    // Create the new invoice number
-    $newInvoiceNumber = 'PJ' . $currentYear . $newSequentialNumber;
-
-    // Buat data penjualan sementara untuk struk
-    $penjualanData = Penjualan::where('no_faktur', $newInvoiceNumber)->first();
-
-$penjualan = (object) [
-    'no_faktur' => $penjualanData->no_faktur ?? $newInvoiceNumber,
-    'total_bayar' => $penjualanData->total_harga ?? 0, // Ambil dari tabel penjualan
-    'uang_diberikan' => $penjualanData->uang_diberikan ?? 0,
-    'kembalian' => $penjualanData->kembalian ?? 0,
-    'tgl_faktur' => $penjualanData->created_at ?? now(),
-    'details' => array_map(function ($barang) {
-        $barangData = Barang::find($barang['barang_id']);
-        return (object) [
-            'barang' => (object) [
-                'nama_barang' => $barangData->nama_barang ?? 'Tidak Diketahui',
-            ],
-            'harga_jual' => $barangData->harga_jual ?? 0,
-            'jumlah' => $barang['jumlah'],
-        ];
-    }, $selectedBarang),
-];
-
-
-    // Format tanggal
-    $penjualan->tanggal_formatted = Carbon::parse($penjualan->tgl_faktur)->locale('id');
-
-    // Tampilkan view struk
-    $user = auth()->user();
-    if ($user->role == 'admin') {
-        return view('Admin.penjualan.struk', compact('penjualan', 'totalHarga', 'uangDiberikan', 'kembalian'));
-    } else {
-        abort(403, 'Unauthorized action.');
-    }
-}
 }

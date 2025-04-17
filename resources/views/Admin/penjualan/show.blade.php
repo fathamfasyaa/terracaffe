@@ -13,9 +13,8 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong>Pelanggan:</strong> {{ $penjualan->pelanggan->nama ?? 'Umum' }}</p>
-                      <p><strong>Uang Diberikan:</strong> Rp{{ number_format($penjualan->uang_diberikan, 0, ',', '.') }}</p>
-<p><strong>Kembalian:</strong> Rp{{ number_format($penjualan->kembalian, 0, ',', '.') }}</p>
-
+                        <p><strong>Uang Diberikan:</strong> Rp{{ number_format($penjualan->uang_diberikan, 0, ',', '.') }}</p>
+                        <p><strong>Kembalian:</strong> Rp{{ number_format($penjualan->kembalian, 0, ',', '.') }}</p>
                     </div>
                 </div>
 
@@ -47,11 +46,22 @@
                     <a href="{{ route('admin.penjualan') }}" class="btn btn-primary">
                         <i class="fas fa-arrow-left"></i> Kembali ke Daftar Penjualan
                     </a>
-                    <a href="{{ route('admin.penjualan.struk', $penjualan->id) }}" class="btn btn-success ml-2">
-                        <i class="fas fa-print"></i> Cetak Struk
-                    </a>
+
+                    {{-- Tombol Cetak Struk (Pastikan ada route admin.penjualan.struk) --}}
+                    <form action="{{ route(auth()->user()->role == 'admin' ? 'admin.penjualan.struk' : 'kasir.penjualan.struk', $penjualan->id) }}" method="POST" style="display:inline;">
+    @csrf
+    <button type="submit" class="btn btn-success ml-2">
+        <i class="fas fa-print"></i> Cetak Struk
+    </button>
+</form>
                 </div>
             </div>
         </div>
     </div>
+    @if (session('success'))
+    <div class="alert alert-success mt-2">
+        {{ session('success') }}
+    </div>
+@endif
+
 @endsection

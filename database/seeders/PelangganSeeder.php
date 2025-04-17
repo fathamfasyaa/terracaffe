@@ -10,6 +10,10 @@ class PelangganSeeder extends Seeder
 {
     public function run()
     {
+        // // Menghapus data lama
+        // DB::table('pelanggan')->delete();
+
+        // Menambahkan data baru
         DB::table('pelanggan')->insert([
             [
                 'kode_pelanggan' => 'PLG001',

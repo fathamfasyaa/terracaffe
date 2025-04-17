@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     return selectedOption && selectedOption.getAttribute('data-kode') === kode;
                 });
 
-                if (targetRow) {
+            if (targetRow) {
                     const jumlahInput = targetRow.querySelector('.jumlah-input');
                     jumlahInput.value = parseInt(jumlahInput.value) + 1;
                 } else {

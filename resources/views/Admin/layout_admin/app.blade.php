@@ -151,6 +151,12 @@
         </div>
     </div>
 </li>
+<!-- resources/views/layouts/app.blade.php -->
+<li class="nav-item">
+    <a class="nav-link" href="{{ route('absensi-kerja.index') }}">
+        <i class="fas fa-clipboard-list"></i> Absensi Kerja
+    </a>
+</li>
 
             <!-- Nav Item - Laporan -->
             <li class="nav-item">

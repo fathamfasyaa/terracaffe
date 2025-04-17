@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiKerjaController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
 
     Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
     Route::get('/admin/laporan/penjualan', [LaporanController::class, 'laporanPenjualan'])->name('admin.laporan.penjualan');
+    Route::get('/admin/laporan/penjualan/pdf', [LaporanController::class, 'exportPdf'])->name('admin.laporan.penjualan.pdf');
+
     Route::get('/admin/laporan/pembelian', [LaporanController::class, 'laporanPembelian'])->name('admin.laporan.pembelian');
 
     Route::get('/admin/pemasok', [PemasokController::class, 'index'])->name('admin.pemasok.index');
@@ -81,7 +84,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('/admin/penjualan/store', [PenjualanController::class, 'store'])->name('admin.penjualan.store');
     Route::get('/admin/penjualan/{id}', [PenjualanController::class, 'show'])->name('admin.penjualan.show');
     Route::delete('/admin/penjualan/{id}', [PenjualanController::class, 'destroy'])->name('admin.penjualan.destroy');
-    Route::get('/admin/penjualan/create/struk', [PenjualanController::class, 'cetakStruk'])->name('admin.penjualan.struk');
+    Route::post('/admin/penjualan/create/struk', [PenjualanController::class, 'cetakStruk'])->name('admin.penjualan.struk');
 
 
     Route::get('/admin/barangs', [BarangController::class, 'index'])->name('admin.barang');
@@ -106,6 +109,7 @@ Route::middleware(['auth', 'role:kasir'])->group(function () {
     Route::get('/kasir/penjualan/create', [PenjualanController::class, 'create'])->name('kasir.penjualan.create');
     Route::post('/kasir/penjualan/store', [PenjualanController::class, 'store'])->name('kasir.penjualan.store');
     Route::get('/kasir/penjualan/{id}', [PenjualanController::class, 'show'])->name('kasir.penjualan.show');
+
     Route::delete('/kasir/penjualan/{id}', [PenjualanController::class, 'destroy'])->name('kasir.penjualan.destroy');
 
     Route::get('/kasir/barangs', [BarangController::class, 'index'])->name('kasir.barang');
@@ -145,14 +149,15 @@ Route::prefix('admin')->group(function () {
 });
 
 
+//admin
+Route::get('absensi-kerja', [AbsensiKerjaController::class, 'index'])->name('absensi-kerja.index');
+Route::post('absensi-kerja', [AbsensiKerjaController::class, 'store'])->name('absensi-kerja.store');
+Route::put('absensi-kerja/{id}', [AbsensiKerjaController::class, 'update'])->name('absensi-kerja.update');
+Route::delete('absensi-kerja/{id}', [AbsensiKerjaController::class, 'destroy'])->name('absensi-kerja.destroy');
+Route::get('absensi-kerja/{id}/edit', [AbsensiKerjaController::class, 'edit'])->name('absensi-kerja.edit');
 
-
-
-
-Route::get('/pengajuan/export-pdf', [PengajuanBarangController::class, 'exportPDF'])->name('pengajuan.export.pdf');
-Route::get('/pengajuan/export-excel', [PengajuanBarangController::class, 'exportExcel'])->name('pengajuan.export.excel');
-
-Route::get('/penjualan/export-excel', [PenjualanController::class, 'exportExcel'])->name('penjualan.export.excel');
-
-
-Route::get('/transaksi/getData', [TransaksiController::class, 'getData'])->name('transaksi.getData');
+Route::post('absensi-kerja/update-status', [AbsensiKerjaController::class, 'updateStatus'])->name('absensi-kerja.update-status');
+Route::post('absensi-kerja/selesai-kerja', [AbsensiKerjaController::class, 'selesaiKerja'])->name('absensi-kerja.selesai-kerja');
+Route::get('absensi-kerja/export/excel', [AbsensiKerjaController::class, 'exportExcel'])->name('absensi-kerja.export.excel');
+Route::get('absensi-kerja/export/pdf', [AbsensiKerjaController::class, 'exportPdf'])->name('absensi-kerja.export.pdf');
+Route::post('/absensi-kerja/import', [AbsensiKerjaController::class, 'import'])->name('absensi-kerja.import');

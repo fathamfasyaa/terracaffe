@@ -33,6 +33,13 @@
             </div>
         </form>
 
+        {{-- Button Export PDF --}}
+        <div class="mb-3">
+            <a href="{{ route('admin.laporan.penjualan.pdf', ['filter_tanggal' => request('filter_tanggal'), 'filter_bulan' => request('filter_bulan')]) }}" class="btn btn-danger">
+                Export PDF
+            </a>
+        </div>
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -81,5 +88,3 @@
         </table>
     </div>
 @endsection
-
-

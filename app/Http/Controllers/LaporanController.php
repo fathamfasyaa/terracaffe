@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Penjualan;
 use App\Models\Pembelian;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -58,5 +59,25 @@ class LaporanController extends Controller
         } else {
             abort(403, 'Unauthorized action.');
         }
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = Penjualan::with('detailPenjualan.barang');
+
+        // Tambahkan filter jika diperlukan
+        if ($request->filter_tanggal) {
+            $query->whereDate('tgl_faktur', $request->filter_tanggal);
+        }
+
+        if ($request->filter_bulan) {
+            $query->whereMonth('tgl_faktur', substr($request->filter_bulan, 5, 2))
+                ->whereYear('tgl_faktur', substr($request->filter_bulan, 0, 4));
+        }
+
+        $penjualan = $query->get();
+
+        $pdf = Pdf::loadView('Admin.laporan.penjualan.pdf', compact('penjualan'));
+        return $pdf->download('laporan-penjualan.pdf');
     }
 }
