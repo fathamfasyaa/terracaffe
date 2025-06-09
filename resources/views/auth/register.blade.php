@@ -128,8 +128,8 @@
                         <span class="input-group-text bg-white"><i class="bi bi-person-badge text-muted"></i></span>
                         <select name="role" class="form-control @error('role') is-invalid @enderror" required>
                             <option value="admin">Admin</option>
-                            <option value="kasir" selected>Kasir</option>
-                            <option value="pemilik">Pemilik</option>
+                            {{-- <option value="kasir" selected>Kasir</option>
+                            <option value="pemilik">Pemilik</option> --}}
                         </select>
                         @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>

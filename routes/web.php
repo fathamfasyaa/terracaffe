@@ -146,6 +146,7 @@ Route::prefix('admin')->group(function () {
     Route::put('/pengajuan-barang/{id}', [PengajuanBarangController::class, 'update'])->name('pengajuan-barang.update');
     Route::delete('/pengajuan-barang/{id}', [PengajuanBarangController::class, 'destroy'])->name('pengajuan-barang.destroy');
     Route::post('/pengajuan-barang/update-terpenuhi/{id}', [PengajuanBarangController::class, 'updateTerpenuhi'])->name('pengajuan.update-terpenuhi');
+    // Route::get('/pengajuan/export/pdf', [PengajuanBarangController::class, 'exportPDF'])->name('pengajuan.export.pdf');
 });
 
 

@@ -90,7 +90,15 @@ class PenjualanController extends Controller
                 $totalBayar += $subTotal;
             }
 
-            $penjualan->update(['total_bayar' => $totalBayar]);
+            $uangDiberikan = $request->uang_diberikan;
+            $kembalian = $uangDiberikan - $totalBayar;
+
+            $penjualan->update([
+                'total_bayar' => $totalBayar,
+                'uang_diberikan' => $uangDiberikan,
+                'kembalian' => $kembalian,
+            ]);
+
 
             DB::commit();
 
@@ -121,39 +129,53 @@ class PenjualanController extends Controller
     private function cetakStruk(Penjualan $penjualan)
     {
         try {
-            $connector = new WindowsPrintConnector("POS-52"); // Ganti dengan nama printer kamu
+            $connector = new WindowsPrintConnector("POS-58"); // Ganti dengan nama printer kamu
             $printer = new Printer($connector);
 
+            // Header
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->text("TERRA CAFE\n");
-            $printer->text("Jl. Contoh Alamat No. 123\n");
-            $printer->text("Telp: 0812-3456-7890\n");
+            $printer->text("GG.H.SAMSURI SELAKOPI\n");
+            $printer->text("Telp: 0858-6031-4877\n");
             $printer->feed();
 
+            // Info penjualan
             $printer->setJustification(Printer::JUSTIFY_LEFT);
             $printer->text("No Faktur : {$penjualan->no_faktur}\n");
-         $printer->text("Tanggal   : " . \Carbon\Carbon::parse($penjualan->tgl_faktur)->format('d-m-Y H:i') . "\n");
+            $printer->text("Tanggal   : " . \Carbon\Carbon::parse($penjualan->tgl_faktur)->format('d-m-Y H:i') . "\n");
             $printer->text("Kasir     : " . $penjualan->user->name . "\n");
             if ($penjualan->pelanggan) {
                 $printer->text("Pelanggan : " . $penjualan->pelanggan->nama . "\n");
             }
             $printer->feed();
 
+            // Detail barang
             $printer->text("--------------------------------\n");
             foreach ($penjualan->detailPenjualan as $detail) {
                 $nama = $detail->barang->nama_barang;
                 $qty = $detail->jumlah;
                 $harga = number_format($detail->harga_jual, 0, ',', '.');
                 $subtotal = number_format($detail->sub_total, 0, ',', '.');
-                $printer->text("$nama\n");
-                $printer->text("  $qty x $harga = $subtotal\n");
+
+                $printer->text($nama . "\n");
+
+                $left = "  {$qty} x {$harga}";
+                $right = $subtotal;
+                $line = str_pad($left, 24) . str_pad($right, 8, ' ', STR_PAD_LEFT);
+                $printer->text($line . "\n");
             }
             $printer->text("--------------------------------\n");
 
+            // Ringkasan pembayaran
             $total = number_format($penjualan->total_bayar, 0, ',', '.');
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text("Total : Rp $total\n");
+            $uangDiberikan = number_format($penjualan->uang_diberikan, 0, ',', '.');
+            $kembalian = number_format($penjualan->kembalian, 0, ',', '.');
 
+            $printer->text(str_pad("Total", 24) . str_pad("Rp {$total}", 8, ' ', STR_PAD_LEFT) . "\n");
+            $printer->text(str_pad("Uang Diberikan", 24) . str_pad("Rp {$uangDiberikan}", 8, ' ', STR_PAD_LEFT) . "\n");
+            $printer->text(str_pad("Kembalian", 24) . str_pad("Rp {$kembalian}", 8, ' ', STR_PAD_LEFT) . "\n");
+
+            // Penutup
             $printer->feed(2);
             $printer->setJustification(Printer::JUSTIFY_CENTER);
             $printer->text("Terima kasih\n");
@@ -161,6 +183,7 @@ class PenjualanController extends Controller
 
             $printer->feed(4);
             $printer->cut();
+            $printer->pulse();
             $printer->close();
         } catch (\Exception $e) {
             Log::error("Gagal mencetak struk: " . $e->getMessage());
@@ -169,11 +192,12 @@ class PenjualanController extends Controller
 
 
 
+
     public function show($id)
     {
         $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
         $user = auth()->user();
-        
+
         if ($user->role == 'admin') {
             return view('admin/penjualan/show', compact('penjualan'));
         } elseif ($user->role == 'kasir') {
@@ -208,6 +232,6 @@ class PenjualanController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
-        } 
+        }
     }
 }

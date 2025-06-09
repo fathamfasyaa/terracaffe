@@ -6,10 +6,10 @@
     
     <div class="d-flex justify-content-between mb-3">
         <a href="{{ route('pengajuan-barang.create') }}" class="btn btn-primary">+ Tambah Pengajuan</a>
-        <div>
+        {{-- <div>
             <a href="{{ route('pengajuan.export.pdf') }}" class="btn btn-danger">Export PDF</a>
             <a href="{{ route('pengajuan.export.excel') }}" class="btn btn-success">Export Excel</a>
-        </div>
+        </div> --}}
     </div>
 
     @if(session('success'))
