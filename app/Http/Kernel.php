@@ -3,6 +3,8 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Console\Scheduling\Schedule;
+use App\Console\Commands\BackupPenjualan;
 
 class Kernel extends HttpKernel
 {
@@ -22,6 +24,11 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
     ];
+
+    protected function schedule(Schedule $schedule)
+    {
+        $schedule->command('backup:penjualan')->dailyAt('23:59');
+    }
 
     /**
      * The application's route middleware groups.

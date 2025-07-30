@@ -195,17 +195,18 @@ class PenjualanController extends Controller
 
     public function show($id)
     {
-        $penjualan = Penjualan::with('detailPenjualan.barang')->findOrFail($id);
+        $penjualan = Penjualan::with(['detailPenjualan.barang', 'pelanggan', 'user'])->findOrFail($id);
         $user = auth()->user();
 
         if ($user->role == 'admin') {
-            return view('admin/penjualan/show', compact('penjualan'));
+            return view('admin.penjualan.show', compact('penjualan'));
         } elseif ($user->role == 'kasir') {
-            return view('kasir/penjualan/show', compact('penjualan'));
+            return view('kasir.penjualan.show', compact('penjualan'));
         } else {
             abort(403, 'Unauthorized action.');
         }
     }
+
 
     public function destroy($id)
     {
